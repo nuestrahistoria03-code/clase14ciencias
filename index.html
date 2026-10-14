@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🕵️‍️ Detectives Organolépticos - Profe Vanessa</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif; }
+  html, body { overflow-x: hidden; }
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: #333;
+    padding: 15px;
+  }
+  .contenedor {
+    max-width: 600px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.95);
+    border-radius: 25px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    border: 4px solid #ffd700;
+  }
+  h1 { text-align: center; font-size: 1.8rem; color: #2e7d32; margin-bottom: 10px; }
+  h2 { text-align: center; color: #ff6f00; margin: 10px 0; font-size: 1.3rem; }
+  .profe-tag {
+    text-align: center;
+    background: linear-gradient(90deg, #ff6f00, #ffca28);
+    color: white;
+    padding: 8px;
+    border-radius: 20px;
+    margin-bottom: 15px;
+    font-weight: bold;
+  }
+  .pantalla { display: none; }
+  .pantalla.activa { display: block; animation: aparecer 0.5s; }
+  @keyframes aparecer { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+
+  input {
+    width: 100%; padding: 14px; margin: 8px 0;
+    border: 3px solid #4caf50; border-radius: 15px;
+    font-size: 1.1rem; text-align: center; background: #f1f8e9; color: #333;
+  }
+  input:focus { outline: none; border-color: #ff6f00; }
+
+  button {
+    background: linear-gradient(135deg, #ff6f00, #ffca28);
+    color: white; border: none; padding: 14px 28px; border-radius: 30px;
+    font-size: 1.15rem; font-weight: bold; cursor: pointer; margin: 8px 0;
+    box-shadow: 0 5px 15px rgba(255,111,0,0.4); transition: all 0.2s; width: 100%;
+  }
+  button:hover { transform: translateY(-3px) scale(1.02); }
+  button.secundario { background: linear-gradient(135deg, #4caf50, #8bc34a); }
+  button.audio-btn {
+    background: linear-gradient(135deg, #2196f3, #03a9f4);
+    padding: 10px 20px; font-size: 1rem; width: auto; margin: 5px;
+  }
+  button.audio-btn.hablando { animation: pulsar 1s infinite; background: linear-gradient(135deg, #f44336, #ff5722); }
+  @keyframes pulsar { 0%,100% { box-shadow: 0 0 10px rgba(244,67,54,0.5); } 50% { box-shadow: 0 0 25px rgba(244,67,54,0.9); } }
+
+  /* MENÚ DE ACTIVIDADES */
+  .menu-actividades {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 15px 0;
+  }
+  .actividad-card {
+    background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+    border: 3px solid #ff9800;
+    border-radius: 20px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .actividad-card:hover { transform: scale(1.05); box-shadow: 0 8px 20px rgba(255,152,0,0.4); }
+  .actividad-card.completada { background: linear-gradient(135deg, #c8e6c9, #a5d6a7); border-color: #4caf50; }
+  .actividad-card .icono { font-size: 2.5rem; display: block; margin-bottom: 5px; }
+  .actividad-card .titulo { font-weight: bold; color: #e65100; font-size: 0.95rem; }
+  .actividad-card .check { font-size: 1.5rem; color: #4caf50; font-weight: bold; }
+
+  /* TUTORIAL */
+  .tutorial-card {
+    background: #e8f5e9; border: 3px solid #4caf50; border-radius: 20px;
+    padding: 20px; margin: 15px 0; text-align: center;
+  }
+  .sentido-icono { font-size: 4rem; margin: 10px 0; display: block; }
+  .definicion {
+    background: white; border-radius: 15px; padding: 15px; margin: 10px 0;
+    font-size: 1.15rem; line-height: 1.6; border-left: 5px solid #ff6f00; text-align: left;
+  }
+  .video-container {
+    position: relative; padding-bottom: 56.25%; height: 0;
+    overflow: hidden; border-radius: 15px; margin: 15px 0;
+    border: 3px solid #ff6f00; background: #000;
+  }
+  .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+  .video-fallback { text-align: center; padding: 15px; background: #fff3e0; border-radius: 15px; margin-top: 10px; }
+  .btn-youtube {
+    background: #ff0000; color: white; padding: 10px 20px; border-radius: 25px;
+    text-decoration: none; font-weight: bold; display: inline-block; margin-top: 8px;
+    box-shadow: 0 4px 10px rgba(255,0,0,0.3); font-size: 0.9rem;
+  }
+  .tutorial-nav { display: flex; justify-content: space-between; margin-top: 15px; gap: 10px; }
+  .tutorial-nav button { width: auto; flex: 1; margin: 0; }
+
+  /* QUIZ */
+  .pregunta-card {
+    background: #fff3e0; border: 3px solid #ff9800;
+    padding: 20px; border-radius: 20px; margin: 15px 0; text-align: center;
+  }
+  .emoji-grande { font-size: 5rem; display: block; margin: 10px 0; animation: flotar 2s ease-in-out infinite; }
+  @keyframes flotar { 0%,100% {transform:translateY(0);} 50% {transform:translateY(-10px);} }
+  .opciones { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+  .opcion {
+    background: white; border: 3px solid #4caf50; color: #333;
+    padding: 15px; border-radius: 15px; font-size: 1.1rem; font-weight: bold;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .opcion:hover { background: #4caf50; color: white; transform: scale(1.05); }
+  .opcion.correcta { background: #4caf50 !important; color: white !important; border-color: #2e7d32 !important; }
+  .opcion.incorrecta { background: #f44336 !important; color: white !important; border-color: #c62828 !important; animation: shake 0.5s; }
+  @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-10px);} 75%{transform:translateX(10px);} }
+
+  /* AHORCADO */
+  .ahorcado-container {
+    background: #fff3e0; border: 3px solid #ff9800;
+    border-radius: 20px; padding: 20px; margin: 15px 0; text-align: center;
+  }
+  .ahorcado-dibujo { font-size: 4rem; margin: 10px 0; min-height: 80px; }
+  .palabra-oculta {
+    display: flex; justify-content: center; gap: 8px;
+    margin: 15px 0; flex-wrap: wrap;
+  }
+  .letra-caja {
+    width: 42px; height: 55px;
+    border-bottom: 4px solid #333;
+    font-size: 2rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2e7d32;
+    background: rgba(255,255,255,0.5);
+    border-radius: 8px 8px 0 0;
+  }
+  .teclado {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin: 15px 0;
+  }
+  .tecla {
+    background: white;
+    border: 2px solid #4caf50;
+    border-radius: 10px;
+    padding: 10px 5px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #333;
+  }
+  .tecla:hover:not(:disabled) { background: #4caf50; color: white; }
+  .tecla:disabled { opacity: 0.5; cursor: not-allowed; }
+  .tecla.usada-correcta { background: #4caf50; color: white; }
+  .tecla.usada-incorrecta { background: #f44336; color: white; }
+  .pista-ahorcado {
+    background: #fff9c4;
+    padding: 10px;
+    border-radius: 12px;
+    margin: 10px 0;
+    font-size: 1rem;
+    border-left: 4px solid #fbc02d;
+  }
+  .vidas-ahorcado { font-size: 1.5rem; margin: 10px 0; }
+
+  /* CONCÉNTRASE - CORREGIDO */
+  .concentrese-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin: 15px 0;
+  }
+  .carta {
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #ff9800, #ffca28);
+    border: 3px solid #e65100;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+  }
+  .carta .reverso {
+    font-size: 2rem;
+    color: white;
+    font-weight: bold;
+  }
+  .carta .contenido {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: white;
+    border-radius: 9px;
+    padding: 5px;
+  }
+  .carta .contenido .emoji-carta { font-size: 2rem; }
+  .carta .contenido .texto-carta { font-size: 0.75rem; font-weight: bold; color: #333; text-align: center; }
+  
+  .carta.volteada {
+    background: white;
+    border-color: #4caf50;
+  }
+  .carta.volteada .reverso { display: none; }
+  .carta.volteada .contenido { display: flex; }
+  
+  .carta.encontrada {
+    background: #c8e6c9;
+    border-color: #4caf50;
+    cursor: default;
+  }
+  .carta.encontrada .reverso { display: none; }
+  .carta.encontrada .contenido { display: flex; }
+
+  /* UNIR PALABRAS */
+  .unir-container {
+    background: #fff3e0;
+    border: 3px solid #ff9800;
+    border-radius: 20px;
+    padding: 20px;
+    margin: 15px 0;
+  }
+  .unir-columnas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+  .unir-columna {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .unir-item {
+    background: white;
+    border: 3px solid #4caf50;
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1rem;
+  }
+  .unir-item:hover { transform: scale(1.05); }
+  .unir-item.seleccionado { background: #ffca28; border-color: #ff6f00; transform: scale(1.05); }
+  .unir-item.conectado { background: #c8e6c9; border-color: #4caf50; cursor: default; }
+  .unir-item.incorrecto { background: #ffcdd2; border-color: #f44336; animation: shake 0.5s; }
+
+  /* INFO TOP */
+  .info-top {
+    display: flex; justify-content: space-between; background: #2e7d32;
+    color: white; padding: 10px 15px; border-radius: 15px; margin-bottom: 10px; font-weight: bold;
+  }
+  .barra-progreso { background: #e0e0e0; border-radius: 20px; height: 20px; overflow: hidden; margin: 10px 0; }
+  .progreso {
+    background: linear-gradient(90deg, #ff6f00, #ffca28); height: 100%;
+    transition: width 0.5s; text-align: center; color: white; font-weight: bold; font-size: 0.8rem; line-height: 20px;
+  }
+  .mensaje {
+    font-size: 1.1rem; margin: 10px 0; padding: 12px; border-radius: 12px;
+    font-weight: bold; text-align: center; display: none;
+  }
+  .mensaje.ok { background: #c8e6c9; color: #2e7d32; border: 2px solid #4caf50; display: block; }
+  .mensaje.error { background: #ffcdd2; color: #c62828; border: 2px solid #f44336; display: block; }
+
+  .reto-final {
+    background: linear-gradient(135deg, #fff9c4, #fff59d);
+    border: 3px dashed #fbc02d; border-radius: 20px; padding: 20px; margin: 15px 0; text-align: center;
+  }
+  .reto-final h3 { color: #f57f17; margin-bottom: 10px; }
+  .diploma-container { text-align: center; margin: 15px 0; }
+  #diplomaCanvas {
+    max-width: 100%; border: 4px solid #ff6f00; border-radius: 15px;
+    box-shadow: 0 0 20px rgba(255,111,0,0.3);
+  }
+  .error-msg { color: #f44336; text-align: center; margin: 10px 0; font-weight: bold; }
+  .estado-envio { text-align: center; margin: 10px 0; font-weight: bold; color: #2e7d32; }
+
+  .stats-errores {
+    background: #fff3e0;
+    border: 2px solid #ff9800;
+    border-radius: 15px;
+    padding: 15px;
+    margin: 15px 0;
+    font-size: 0.95rem;
+  }
+  .stats-errores h4 { color: #e65100; margin-bottom: 10px; }
+  .stat-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #ffcc80; }
+  .stat-item:last-child { border-bottom: none; }
+
+  @media (max-width: 450px) {
+    h1 { font-size: 1.4rem; }
+    .emoji-grande { font-size: 4rem; }
+    .opcion { font-size: 1rem; padding: 12px; }
+    .contenedor { padding: 18px; }
+    .tecla { font-size: 0.9rem; padding: 8px 3px; }
+    .letra-caja { width: 34px; height: 46px; font-size: 1.6rem; }
+    .concentrese-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .carta .contenido .emoji-carta { font-size: 1.6rem; }
+    .carta .contenido .texto-carta { font-size: 0.65rem; }
+    .unir-item { font-size: 0.9rem; padding: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="contenedor">
+
+  <!-- BIENVENIDA -->
+  <div id="pantallaBienvenida" class="pantalla activa">
+    <div style="font-size:4rem; text-align:center;">🕵️‍♂️🔬🍎</div>
+    <h1>Laboratorio de los Sentidos</h1>
+    <div class="profe-tag">👩‍🏫 Profe Vanessa Salcedo - Ciencias Naturales</div>
+    <h2>¡Misión Detectives Organolépticos!</h2>
+    <p style="text-align:center; margin:15px 0; font-size:1.05rem; line-height:1.5;">
+      🌟 Hoy serás un detective de la ciencia<br>
+      🔍 Verás videos y explicaciones sobre tus 5 sentidos<br>
+      🎮 Tendrás 4 juegos divertidos para jugar<br>
+      🏆 Al final tendrás un reto en casa y un diploma
+    </p>
+    <button onclick="cambiarPantalla('pantallaRegistro')">🚀 ¡Aceptar la Misión!</button>
+  </div>
+
+  <!-- REGISTRO -->
+  <div id="pantallaRegistro" class="pantalla">
+    <div style="font-size:3rem; text-align:center;">📝</div>
+    <h2>Identifícate Detective</h2>
+    <p style="text-align:center; margin:10px 0;">La Profe Vanessa necesita saber tu nombre</p>
+    <input type="text" id="nombre" placeholder="✏️ Tu nombre" maxlength="25">
+    <input type="text" id="apellido" placeholder="✏️ Tu apellido" maxlength="25">
+    <button onclick="irATutorial()">🔬 Ir al Laboratorio</button>
+    <p id="errorRegistro" class="error-msg"></p>
+  </div>
+
+  <!-- TUTORIAL -->
+  <div id="pantallaTutorial" class="pantalla">
+    <h2>📚 Tu Manual de Detective</h2>
+    <div id="tutorialContenido"></div>
+    <div style="text-align:center; margin: 15px 0;">
+      <button class="audio-btn" id="btnEscucharTutorial" onclick="leerTutorialActual()"> Escuchar explicación</button>
+    </div>
+    <div class="tutorial-nav">
+      <button class="secundario" id="btnAnterior" onclick="tutorialAnterior()">◀ Anterior</button>
+      <button id="btnSiguiente" onclick="tutorialSiguiente()">Siguiente ▶</button>
+    </div>
+  </div>
+
+  <!-- MENÚ DE ACTIVIDADES -->
+  <div id="pantallaMenu" class="pantalla">
+    <h2>🎮 Elige una Actividad</h2>
+    <p style="text-align:center; margin:10px 0;">Completa las 4 actividades para ganar tu diploma</p>
+    <div class="menu-actividades">
+      <div class="actividad-card" id="card-quiz" onclick="iniciarQuiz()">
+        <span class="icono">❓</span>
+        <span class="titulo">Quiz de Sentidos</span>
+        <span class="check" id="check-quiz" style="display:none;">✅</span>
+      </div>
+      <div class="actividad-card" id="card-ahorcado" onclick="iniciarAhorcado()">
+        <span class="icono">🔤</span>
+        <span class="titulo">Ahorcado</span>
+        <span class="check" id="check-ahorcado" style="display:none;">✅</span>
+      </div>
+      <div class="actividad-card" id="card-concentrese" onclick="iniciarConcentrese()">
+        <span class="icono">🧠</span>
+        <span class="titulo">Concéntrese</span>
+        <span class="check" id="check-concentrese" style="display:none;">✅</span>
+      </div>
+      <div class="actividad-card" id="card-unir" onclick="iniciarUnir()">
+        <span class="icono">🔗</span>
+        <span class="titulo">Unir Palabras</span>
+        <span class="check" id="check-unir" style="display:none;">✅</span>
+      </div>
+    </div>
+    <button class="secundario" onclick="verificarCompletado()" style="margin-top:15px;">🏆 Ver mi Diploma</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="pantallaQuiz" class="pantalla">
+    <div class="info-top">
+      <span>🕵️ <span id="jugadorInfo1">Detective</span></span>
+      <span>⭐ <span id="estrellasContador">0</span></span>
+    </div>
+    <div class="barra-progreso">
+      <div class="progreso" id="barraProgreso">0/5</div>
+    </div>
+    <button class="secundario" onclick="cambiarPantalla('pantallaMenu')" style="padding:8px 15px; font-size:0.9rem; width:auto;">◀ Volver al menú</button>
+    <div class="pregunta-card">
+      <span class="emoji-grande" id="emojiPregunta">🍎</span>
+      <div id="enunciado" style="font-size:1.2rem; font-weight:bold; margin:10px 0;"></div>
+      <button class="audio-btn" id="btnEscuchar" onclick="leerPreguntaActual()">🔊 Escuchar misión</button>
+    </div>
+    <div class="opciones" id="opciones"></div>
+    <div id="mensaje" class="mensaje"></div>
+  </div>
+
+  <!-- AHORCADO -->
+  <div id="pantallaAhorcado" class="pantalla">
+    <div class="info-top">
+      <span> Ahorcado</span>
+      <span>❤️ <span id="vidasAhorcado">6</span></span>
+    </div>
+    <button class="secundario" onclick="cambiarPantalla('pantallaMenu')" style="padding:8px 15px; font-size:0.9rem; width:auto;">◀ Volver al menú</button>
+    <div class="ahorcado-container">
+      <div class="ahorcado-dibujo" id="ahorcadoDibujo">🤔</div>
+      <div class="pista-ahorcado" id="pistaAhorcado">💡 Pista: </div>
+      <div class="palabra-oculta" id="palabraOculta"></div>
+      <div class="vidas-ahorcado" id="vidasVisual">❤️❤️❤️❤️❤️❤️</div>
+      <div class="teclado" id="teclado"></div>
+      <div id="mensajeAhorcado" class="mensaje"></div>
+      <button id="btnSiguienteAhorcado" onclick="siguientePalabra()" style="display:none;">➡️ Siguiente palabra</button>
+    </div>
+  </div>
+
+  <!-- CONCÉNTRASE -->
+  <div id="pantallaConcentrese" class="pantalla">
+    <div class="info-top">
+      <span>🧠 Concéntrese</span>
+      <span>🎯 Pares: <span id="paresEncontrados">0</span>/8</span>
+    </div>
+    <button class="secundario" onclick="cambiarPantalla('pantallaMenu')" style="padding:8px 15px; font-size:0.9rem; width:auto;">◀ Volver al menú</button>
+    <div class="concentrese-grid" id="concentreseGrid"></div>
+    <div id="mensajeConcentrese" class="mensaje"></div>
+  </div>
+
+  <!-- UNIR PALABRAS -->
+  <div id="pantallaUnir" class="pantalla">
+    <div class="info-top">
+      <span>🔗 Unir Palabras</span>
+      <span>✅ <span id="conexionesHechas">0</span>/5</span>
+    </div>
+    <button class="secundario" onclick="cambiarPantalla('pantallaMenu')" style="padding:8px 15px; font-size:0.9rem; width:auto;"> Volver al menú</button>
+    <div class="unir-container">
+      <p style="text-align:center; margin-bottom:15px; font-weight:bold; color:#e65100;">Une cada sentido con su órgano</p>
+      <div class="unir-columnas">
+        <div class="unir-columna" id="columnaIzquierda"></div>
+        <div class="unir-columna" id="columnaDerecha"></div>
+      </div>
+      <div id="mensajeUnir" class="mensaje"></div>
+    </div>
+  </div>
+
+  <!-- FINAL -->
+  <div id="pantallaFinal" class="pantalla">
+    <h1>🎉 ¡Misión Cumplida! </h1>
+    <div style="text-align:center; background:#e8f5e9; padding:20px; border-radius:20px; border:3px solid #4caf50; margin:15px 0;">
+      <span style="font-size:4rem;">🏆</span>
+      <h3 id="resumenJugador"></h3>
+      <p>⭐ Estrellas totales: <b id="finalEstrellas">0</b></p>
+      <p>✅ Actividades completadas: <b id="finalActividades">0</b> de 4</p>
+    </div>
+    
+    <div class="stats-errores">
+      <h4> Tu Reporte de Errores</h4>
+      <div class="stat-item"><span>❓ Quiz - Errores:</span><span id="statQuiz">0</span></div>
+      <div class="stat-item"><span>🔤 Ahorcado - Errores:</span><span id="statAhorcado">0</span></div>
+      <div class="stat-item"><span>🧠 Concéntrese - Errores:</span><span id="statConcentrese">0</span></div>
+      <div class="stat-item"><span>🔗 Unir Palabras - Errores:</span><span id="statUnir">0</span></div>
+      <div class="stat-item" style="border-top:2px solid #ff9800; margin-top:8px; padding-top:8px;"><span><b>Total de errores:</b></span><span id="statTotal" style="font-weight:bold; color:#e65100;">0</span></div>
+    </div>
+
+    <div class="reto-final">
+      <h3>📝 TU RETO EN CASA</h3>
+      <p style="font-size:1.05rem; line-height:1.5;">
+        1. Busca un objeto en tu casa como una fruta o un juguete<br>
+        2. Dibújalo en tu cuaderno<br>
+        3. Escribe 2 cosas que descubras con tus sentidos<br>
+        Ejemplo es de color rojo y es suave al tacto<br>
+        <b>¡Esto te servirá para tu exposición!</b>
+      </p>
+    </div>
+
+    <p class="estado-envio" id="estadoEnvio"></p>
+    
+    <h2 style="margin-top:20px;">🎓 Tu Diploma de Detective</h2>
+    <div class="diploma-container">
+      <canvas id="diplomaCanvas" width="800" height="560"></canvas>
+    </div>
+    <button onclick="descargarDiploma()">📥 Descargar Diploma</button>
+    <button class="secundario" onclick="reiniciar()">🔄 Jugar otra vez</button>
+  </div>
+
+</div>
+
+<script>
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxlZcDBuA0FBGgJ64FXAFsKv353fXloN5HeAtVCbadn-Kjpv2AsvEWdBzK46EwD5C9XgA/exec";
+
+let nombre = "", apellido = "";
+let estrellas = 0;
+let actividadesCompletadas = { quiz: false, ahorcado: false, concentrese: false, unir: false };
+let errores = { quiz: 0, ahorcado: 0, concentrese: 0, unir: 0 };
+let tutorialActual = 0;
+let tutorialTextoAudio = "";
+let preguntaTextoAudio = "";
+let vozFemenina = null;
+let audioActivo = true;
+
+// ============ AUDIO ============
+function limpiarTextoParaAudio(texto) {
+  return texto.replace(/[\u{1F000}-\u{1FFFF}]/gu, " ")
+              .replace(/[\u{2600}-\u{27BF}]/gu, " ")
+              .replace(/[\u{FE00}-\u{FE0F}]/gu, " ")
+              .replace(/\s+/g, " ").trim();
+}
+
+function buscarVozFemenina() {
+  if (!('speechSynthesis' in window)) return null;
+  const voces = window.speechSynthesis.getVoices();
+  if (voces.length === 0) return null;
+  const palabrasFemeninas = ['female', 'mujer', 'mónica', 'monica', 'paulina', 'helena', 'lara', 'maria', 'maría', 'sabina', 'mia', 'google español'];
+  for (const voz of voces) {
+    if (!voz.lang.startsWith('es')) continue;
+    if (palabrasFemeninas.some(p => voz.name.toLowerCase().includes(p))) return voz;
+  }
+  for (const voz of voces) {
+    if (voz.lang.startsWith('es')) return voz;
+  }
+  return null;
+}
+
+function inicializarVoces() {
+  if (!('speechSynthesis' in window)) return;
+  vozFemenina = buscarVozFemenina();
+  setTimeout(() => { if (!vozFemenina) vozFemenina = buscarVozFemenina(); }, 500);
+}
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.onvoiceschanged = () => { inicializarVoces(); };
+  inicializarVoces();
+}
+
+function hablar(texto, callback) {
+  if (!audioActivo) { if (callback) callback(); return; }
+  if (!('speechSynthesis' in window)) { if (callback) callback(); return; }
+  try {
+    window.speechSynthesis.cancel();
+    const textoLimpio = limpiarTextoParaAudio(texto);
+    if (!textoLimpio) { if (callback) callback(); return; }
+    const utterance = new SpeechSynthesisUtterance(textoLimpio);
+    utterance.lang = 'es-ES';
+    utterance.rate = 0.9;
+    utterance.pitch = 1.2;
+    if (vozFemenina) utterance.voice = vozFemenina;
+    utterance.onend = () => {
+      document.querySelectorAll(".audio-btn").forEach(b => b.classList.remove("hablando"));
+      if (callback) callback();
+    };
+    window.speechSynthesis.speak(utterance);
+  } catch(e) { if (callback) callback(); }
+}
+
+function leerPreguntaActual() {
+  if (!preguntaTextoAudio) return;
+  document.getElementById("btnEscuchar").classList.add("hablando");
+  hablar(preguntaTextoAudio);
+}
+
+function leerTutorialActual() {
+  if (!tutorialTextoAudio) return;
+  document.getElementById("btnEscucharTutorial").classList.add("hablando");
+  hablar(tutorialTextoAudio);
+}
+
+// ============ NAVEGACIÓN ============
+function cambiarPantalla(id) {
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  document.querySelectorAll(".pantalla").forEach(p => p.classList.remove("activa"));
+  document.getElementById(id).classList.add("activa");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function irATutorial() {
+  const n = document.getElementById("nombre").value.trim();
+  const a = document.getElementById("apellido").value.trim();
+  if (!n || !a) {
+    document.getElementById("errorRegistro").innerText = "⚠️ Escribe tu nombre y apellido";
+    return;
+  }
+  nombre = n; apellido = a;
+  document.getElementById("errorRegistro").innerText = "";
+  document.getElementById("jugadorInfo1").innerText = nombre;
+  mostrarTutorial();
+  cambiarPantalla("pantallaTutorial");
+}
+
+// ============ TUTORIAL ============
+const tutoriales = [
+  {
+    titulo: "🌟 ¡Hola pequeño detective!",
+    icono: "🔬",
+    texto: "Hoy vamos a descubrir un superpoder que ya tienes. Son tus cinco sentidos. Vamos a ver un video mágico para recordar cómo funcionan. Presta mucha atención.",
+    audio: "Hola pequeño detective. Hoy vamos a descubrir un superpoder que ya tienes. Son tus cinco sentidos. Vamos a ver un video mágico para recordar cómo funcionan. Presta mucha atención.",
+    videoId: "cidRm_t9Q3c"
+  },
+  {
+    titulo: "👁️ Tus ojos y 👂 tus orejas",
+    icono: "👁️",
+    texto: "Imagina que eres un explorador. Con tus ojos ves los colores brillantes y las formas divertidas. Con tus orejas escuchas la música y las risas de tus amigos. ¡Tus ojos y orejas son tus mejores aliados!",
+    audio: "Imagina que eres un explorador. Con tus ojos ves los colores brillantes y las formas divertidas. Con tus orejas escuchas la música y las risas de tus amigos. ¡Tus ojos y orejas son tus mejores aliados!",
+    videoId: "a_EfwFzm1ys"
+  },
+  {
+    titulo: "👃 Tu nariz 👅 tu lengua y ✋ tus manos",
+    icono: "👃👅",
+    texto: "Usa tu nariz para oler una rica galleta. Usa tu lengua para saborear una dulce fresa. Y usa tus manos para sentir un peluche suave o un hielo frío. ¡Tu cuerpo es una máquina increíble!",
+    audio: "Usa tu nariz para oler una rica galleta. Usa tu lengua para saborear una dulce fresa. Y usa tus manos para sentir un peluche suave o un hielo frío. ¡Tu cuerpo es una máquina increíble!",
+    videoId: "xIGj3Kcvnr4"
+  },
+  {
+    titulo: "🔬 El secreto de las propiedades organolépticas",
+    icono: "🕵️‍♂️",
+    texto: "Esta palabra suena difícil pero es muy fácil. Significa todo lo que descubres con tus sentidos. El color el olor el sabor y lo suave o áspero. ¡Eso son las propiedades organolépticas! Ahora estás listo para los juegos.",
+    audio: "Esta palabra suena difícil pero es muy fácil. Significa todo lo que descubres con tus sentidos. El color, el olor, el sabor y lo suave o áspero. ¡Eso son las propiedades organolépticas! Ahora estás listo para los juegos.",
+    videoId: null
+  }
+];
+
+function mostrarTutorial() {
+  const t = tutoriales[tutorialActual];
+  let videoHTML = "";
+  if (t.videoId) {
+    videoHTML = `
+      <div class="video-container">
+        <iframe src="https://www.youtube.com/embed/${t.videoId}?rel=0&modestbranding=1" 
+                title="Video educativo" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen></iframe>
+      </div>
+      <div class="video-fallback">
+        <p style="color:#ff6f00; font-weight:bold; font-size:0.9rem;">⚠️ Si el video no carga aquí</p>
+        <a href="https://www.youtube.com/watch?v=${t.videoId}" target="_blank" class="btn-youtube">▶ Abrir video en YouTube</a>
+      </div>
+    `;
+  }
+  document.getElementById("tutorialContenido").innerHTML = `
+    <div class="tutorial-card">
+      <span class="sentido-icono">${t.icono}</span>
+      <h3 style="color:#2e7d32;">${t.titulo}</h3>
+      ${videoHTML}
+      <div class="definicion">${t.texto}</div>
+    </div>
+  `;
+  tutorialTextoAudio = t.audio;
+  document.getElementById("btnAnterior").style.visibility = tutorialActual === 0 ? "hidden" : "visible";
+  const btnSig = document.getElementById("btnSiguiente");
+  if (tutorialActual === tutoriales.length - 1) {
+    btnSig.innerText = "🎮 ¡Ir a los Juegos!";
+    btnSig.onclick = () => {
+      cambiarPantalla("pantallaMenu");
+      actualizarMenu();
+    };
+  } else {
+    btnSig.innerText = "Siguiente ▶";
+    btnSig.onclick = tutorialSiguiente;
+  }
+  setTimeout(() => { leerTutorialActual(); }, 600);
+}
+
+function tutorialSiguiente() {
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  if (tutorialActual < tutoriales.length - 1) { tutorialActual++; mostrarTutorial(); }
+}
+function tutorialAnterior() {
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  if (tutorialActual > 0) { tutorialActual--; mostrarTutorial(); }
+}
+
+function actualizarMenu() {
+  ['quiz', 'ahorcado', 'concentrese', 'unir'].forEach(act => {
+    const card = document.getElementById(`card-${act}`);
+    const check = document.getElementById(`check-${act}`);
+    if (actividadesCompletadas[act]) {
+      card.classList.add("completada");
+      check.style.display = "inline";
+    } else {
+      card.classList.remove("completada");
+      check.style.display = "none";
+    }
+  });
+}
+
+function verificarCompletado() {
+  const total = Object.values(actividadesCompletadas).filter(v => v).length;
+  if (total < 4) {
+    const faltantes = [];
+    if (!actividadesCompletadas.quiz) faltantes.push("Quiz");
+    if (!actividadesCompletadas.ahorcado) faltantes.push("Ahorcado");
+    if (!actividadesCompletadas.concentrese) faltantes.push("Concéntrese");
+    if (!actividadesCompletadas.unir) faltantes.push("Unir Palabras");
+    alert(`¡Aún te faltan actividades: ${faltantes.join(", ")}! Completa todas para obtener tu diploma.`);
+    return;
+  }
+  enviarNotasAutomatico();
+  document.getElementById("finalEstrellas").innerText = estrellas;
+  document.getElementById("finalActividades").innerText = total;
+  document.getElementById("resumenJugador").innerText = `Detective ${nombre} ${apellido}`;
+  document.getElementById("statQuiz").innerText = errores.quiz;
+  document.getElementById("statAhorcado").innerText = errores.ahorcado;
+  document.getElementById("statConcentrese").innerText = errores.concentrese;
+  document.getElementById("statUnir").innerText = errores.unir;
+  document.getElementById("statTotal").innerText = errores.quiz + errores.ahorcado + errores.concentrese + errores.unir;
+  cambiarPantalla("pantallaFinal");
+  generarDiploma();
+  if (audioActivo) {
+    setTimeout(() => hablar(`¡Felicidades detective ${nombre}! Completaste todas las actividades con ${estrellas} estrellas. Ahora realiza el reto en tu casa.`), 800);
+  }
+}
+
+// ============ QUIZ ============
+const misiones = [
+  { emoji: "", pregunta: "Miras una manzana y ves que es roja y redonda. ¿Qué sentido usaste?", audio: "Miras una manzana y ves que es roja y redonda. ¿Qué sentido usaste?", opciones: ["El Oído", "La Vista", "El Tacto", "El Olfato"], correcta: 1 },
+  { emoji: "🐶", pregunta: "Escuchas el ladrido de un perrito a lo lejos. ¿Qué sentido te avisó?", audio: "Escuchas el ladrido de un perrito a lo lejos. ¿Qué sentido te avisó?", opciones: ["La Vista", "El Gusto", "El Oído", "El Tacto"], correcta: 2 },
+  { emoji: "", pregunta: "Pruebas un limón y haces una cara rara porque es ácido. ¿Qué sentido usaste?", audio: "Pruebas un limón y haces una cara rara porque es ácido. ¿Qué sentido usaste?", opciones: ["El Olfato", "El Gusto", "La Vista", "El Oído"], correcta: 1 },
+  { emoji: "🌹", pregunta: "Te acercas a una flor y sientes que huele muy rico. ¿Qué sentido es?", audio: "Te acercas a una flor y sientes que huele muy rico. ¿Qué sentido es?", opciones: ["El Olfato", "El Tacto", "El Gusto", "La Vista"], correcta: 0 },
+  { emoji: "", pregunta: "Acaricias un osito de peluche y sientes que es muy suave. ¿Qué sentido investigaste?", audio: "Acaricias un osito de peluche y sientes que es muy suave. ¿Qué sentido investigaste?", opciones: ["La Vista", "El Oído", "El Tacto", "El Gusto"], correcta: 2 }
+];
+
+let preguntaActual = 0;
+let preguntas = [];
+let erroresQuizTemp = 0;
+
+function iniciarQuiz() {
+  preguntas = misiones.sort(() => Math.random() - 0.5);
+  preguntaActual = 0;
+  erroresQuizTemp = 0;
+  cambiarPantalla("pantallaQuiz");
+  mostrarPregunta();
+}
+
+function mostrarPregunta() {
+  if (preguntaActual >= 5) {
+    errores.quiz = erroresQuizTemp;
+    const aciertos = 5 - erroresQuizTemp;
+    if (aciertos >= 3) {
+      actividadesCompletadas.quiz = true;
+      actualizarMenu();
+      alert(`✅ ¡Quiz completado! Aciertos: ${aciertos}/5, Errores: ${erroresQuizTemp}. Ganaste 5 estrellas.`);
+      estrellas += 5;
+    } else {
+      alert(`❌ Necesitas al menos 3 aciertos para completar el quiz. Tuviste ${aciertos} aciertos y ${erroresQuizTemp} errores. ¡Inténtalo de nuevo!`);
+    }
+    cambiarPantalla("pantallaMenu");
+    return;
+  }
+  const p = preguntas[preguntaActual];
+  document.getElementById("emojiPregunta").innerText = p.emoji;
+  document.getElementById("enunciado").innerText = p.pregunta;
+  preguntaTextoAudio = p.audio;
+  const cont = document.getElementById("opciones");
+  cont.innerHTML = "";
+  p.opciones.forEach((op, index) => {
+    const btn = document.createElement("button");
+    btn.className = "opcion";
+    btn.innerText = op;
+    btn.onclick = () => responder(btn, index, p.correcta);
+    cont.appendChild(btn);
+  });
+  document.getElementById("mensaje").style.display = "none";
+  document.getElementById("barraProgreso").style.width = (preguntaActual/5*100) + "%";
+  document.getElementById("barraProgreso").innerText = `${preguntaActual}/5`;
+  setTimeout(() => { leerPreguntaActual(); }, 600);
+}
+
+function responder(boton, elegida, correcta) {
+  const botones = document.querySelectorAll(".opcion");
+  botones.forEach(b => b.disabled = true);
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  const msg = document.getElementById("mensaje");
+  if (elegida === correcta) {
+    boton.classList.add("correcta");
+    msg.className = "mensaje ok";
+    msg.innerText = "✅ ¡Excelente detective!";
+    if (audioActivo) setTimeout(() => hablar("¡Excelente detective! Respuesta correcta."), 400);
+  } else {
+    boton.classList.add("incorrecta");
+    botones.forEach((b, i) => { if (i === correcta) b.classList.add("correcta"); });
+    msg.className = "mensaje error";
+    msg.innerText = `❌ La respuesta era ${preguntas[preguntaActual].opciones[correcta]}`;
+    erroresQuizTemp++;
+    if (audioActivo) setTimeout(() => hablar(`La respuesta correcta era ${preguntas[preguntaActual].opciones[correcta]}`), 400);
+  }
+  msg.style.display = "block";
+  document.getElementById("estrellasContador").innerText = estrellas;
+  preguntaActual++;
+  setTimeout(mostrarPregunta, 2200);
+}
+
+// ============ AHORCADO ============
+const palabrasAhorcado = [
+  { palabra: "VISTA", pista: "Sentido que usas con los ojos para ver colores y formas" },
+  { palabra: "OIDO", pista: "Sentido que usas con las orejas para escuchar sonidos" },
+  { palabra: "OLFATO", pista: "Sentido que usas con la nariz para oler" },
+  { palabra: "GUSTO", pista: "Sentido que usas con la lengua para saborear" },
+  { palabra: "TACTO", pista: "Sentido que usas con la piel para sentir texturas" },
+  { palabra: "COLOR", pista: "Propiedad que descubres con la vista como rojo o azul" },
+  { palabra: "SUAVE", pista: "Textura que sientes al tocar un peluche" }
+];
+
+let palabraActual = 0;
+let letrasAdivinadas = [];
+let vidasAhorcado = 6;
+let erroresAhorcadoTemp = 0;
+let palabrasCompletadas = 0;
+
+function iniciarAhorcado() {
+  palabraActual = 0;
+  letrasAdivinadas = [];
+  vidasAhorcado = 6;
+  erroresAhorcadoTemp = 0;
+  palabrasCompletadas = 0;
+  cambiarPantalla("pantallaAhorcado");
+  cargarPalabraAhorcado();
+}
+
+function normalizarLetra(letra) {
+  const mapa = { 'Á':'A', 'É':'E', 'Í':'I', 'Ó':'O', 'Ú':'U', 'Ñ':'N' };
+  return mapa[letra] || letra;
+}
+
+function cargarPalabraAhorcado() {
+  if (palabraActual >= palabrasAhorcado.length) {
+    errores.ahorcado = erroresAhorcadoTemp;
+    if (palabrasCompletadas >= 5) {
+      actividadesCompletadas.ahorcado = true;
+      actualizarMenu();
+      alert(`✅ ¡Ahorcado completado! Palabras adivinadas: ${palabrasCompletadas}/${palabrasAhorcado.length}, Errores: ${erroresAhorcadoTemp}. Ganaste 5 estrellas.`);
+      estrellas += 5;
+    } else {
+      alert(`❌ Necesitas adivinar al menos 5 palabras. Adivinaste ${palabrasCompletadas} y tuviste ${erroresAhorcadoTemp} errores. ¡Inténtalo de nuevo!`);
+    }
+    cambiarPantalla("pantallaMenu");
+    return;
+  }
+  letrasAdivinadas = [];
+  vidasAhorcado = 6;
+  const p = palabrasAhorcado[palabraActual];
+  document.getElementById("pistaAhorcado").innerText = `💡 Pista: ${p.pista}`;
+  document.getElementById("vidasAhorcado").innerText = vidasAhorcado;
+  document.getElementById("vidasVisual").innerText = "❤️".repeat(vidasAhorcado);
+  document.getElementById("ahorcadoDibujo").innerText = "🤔";
+  document.getElementById("mensajeAhorcado").style.display = "none";
+  document.getElementById("btnSiguienteAhorcado").style.display = "none";
+  renderizarPalabra();
+  crearTeclado();
+}
+
+function renderizarPalabra() {
+  const p = palabrasAhorcado[palabraActual].palabra;
+  const cont = document.getElementById("palabraOculta");
+  cont.innerHTML = "";
+  for (let letra of p) {
+    const caja = document.createElement("div");
+    caja.className = "letra-caja";
+    const letraNorm = normalizarLetra(letra);
+    const mostrada = letrasAdivinadas.some(l => normalizarLetra(l) === letraNorm);
+    caja.innerText = mostrada ? letra : "";
+    caja.style.color = mostrada ? "#2e7d32" : "transparent";
+    cont.appendChild(caja);
+  }
+}
+
+function crearTeclado() {
+  const cont = document.getElementById("teclado");
+  cont.innerHTML = "";
+  const letras = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
+  for (let letra of letras) {
+    const btn = document.createElement("button");
+    btn.className = "tecla";
+    btn.innerText = letra;
+    btn.onclick = () => adivinarLetra(letra, btn);
+    cont.appendChild(btn);
+  }
+}
+
+function adivinarLetra(letra, btn) {
+  btn.disabled = true;
+  const p = palabrasAhorcado[palabraActual].palabra;
+  const letraNorm = normalizarLetra(letra);
+  const palabraNorm = p.split("").map(normalizarLetra);
+  
+  if (palabraNorm.includes(letraNorm)) {
+    letrasAdivinadas.push(letra);
+    btn.classList.add("usada-correcta");
+    renderizarPalabra();
+    if (palabraNorm.every(l => letrasAdivinadas.some(a => normalizarLetra(a) === l))) {
+      palabrasCompletadas++;
+      document.getElementById("ahorcadoDibujo").innerText = "🎉";
+      document.getElementById("mensajeAhorcado").className = "mensaje ok";
+      document.getElementById("mensajeAhorcado").innerText = `¡Adivinaste ${p}!`;
+      document.getElementById("mensajeAhorcado").style.display = "block";
+      document.getElementById("btnSiguienteAhorcado").style.display = "block";
+      if (audioActivo) hablar(`¡Muy bien! La palabra era ${p}`);
+    }
+  } else {
+    btn.classList.add("usada-incorrecta");
+    erroresAhorcadoTemp++;
+    vidasAhorcado--;
+    document.getElementById("vidasAhorcado").innerText = vidasAhorcado;
+    document.getElementById("vidasVisual").innerText = "❤️".repeat(Math.max(0, vidasAhorcado));
+    const dibujos = ["🤔", "😟", "😰", "😨", "😱", "💀"];
+    document.getElementById("ahorcadoDibujo").innerText = dibujos[Math.min(5, 6 - vidasAhorcado)] || "💀";
+    if (vidasAhorcado <= 0) {
+      document.getElementById("mensajeAhorcado").className = "mensaje error";
+      document.getElementById("mensajeAhorcado").innerText = `La palabra era ${p}`;
+      document.getElementById("mensajeAhorcado").style.display = "block";
+      document.getElementById("btnSiguienteAhorcado").style.display = "block";
+      if (audioActivo) hablar(`La palabra era ${p}`);
+    }
+  }
+}
+
+function siguientePalabra() {
+  palabraActual++;
+  cargarPalabraAhorcado();
+}
+
+// ============ CONCÉNTRASE ============
+const paresConcentrese = [
+  { emoji: "👁️", texto: "VISTA" },
+  { emoji: "", texto: "OIDO" },
+  { emoji: "👃", texto: "OLFATO" },
+  { emoji: "", texto: "GUSTO" },
+  { emoji: "✋", texto: "TACTO" },
+  { emoji: "🔴", texto: "COLOR" },
+  { emoji: "🎵", texto: "SONIDO" },
+  { emoji: "🌸", texto: "OLOR" }
+];
+
+let cartasVolteadas = [];
+let paresEncontrados = 0;
+let bloqueadoConcentrese = false;
+let erroresConcentreseTemp = 0;
+
+function iniciarConcentrese() {
+  paresEncontrados = 0;
+  cartasVolteadas = [];
+  bloqueadoConcentrese = false;
+  erroresConcentreseTemp = 0;
+  document.getElementById("paresEncontrados").innerText = "0";
+  document.getElementById("mensajeConcentrese").style.display = "none";
+  cambiarPantalla("pantallaConcentrese");
+  crearCartas();
+}
+
+function crearCartas() {
+  const cont = document.getElementById("concentreseGrid");
+  cont.innerHTML = "";
+  const cartas = [];
+  paresConcentrese.forEach((par, i) => {
+    cartas.push({ tipo: i, emoji: par.emoji, texto: par.texto, esEmoji: true });
+    cartas.push({ tipo: i, emoji: par.emoji, texto: par.texto, esEmoji: false });
+  });
+  cartas.sort(() => Math.random() - 0.5);
+  cartas.forEach((carta, idx) => {
+    const div = document.createElement("div");
+    div.className = "carta";
+    div.dataset.idx = idx;
+    div.dataset.tipo = carta.tipo;
+    div.innerHTML = `
+      <div class="reverso">❓</div>
+      <div class="contenido">
+        <span class="emoji-carta">${carta.emoji}</span>
+        <span class="texto-carta">${carta.texto}</span>
+      </div>
+    `;
+    div.onclick = () => voltearCarta(div);
+    cont.appendChild(div);
+  });
+}
+
+function voltearCarta(carta) {
+  if (bloqueadoConcentrese) return;
+  if (carta.classList.contains("volteada") || carta.classList.contains("encontrada")) return;
+  if (cartasVolteadas.length >= 2) return;
+  
+  carta.classList.add("volteada");
+  cartasVolteadas.push(carta);
+  
+  if (cartasVolteadas.length === 2) {
+    bloqueadoConcentrese = true;
+    const [c1, c2] = cartasVolteadas;
+    if (c1.dataset.tipo === c2.dataset.tipo) {
+      setTimeout(() => {
+        c1.classList.remove("volteada");
+        c2.classList.remove("volteada");
+        c1.classList.add("encontrada");
+        c2.classList.add("encontrada");
+        cartasVolteadas = [];
+        bloqueadoConcentrese = false;
+        paresEncontrados++;
+        document.getElementById("paresEncontrados").innerText = paresEncontrados;
+        if (paresEncontrados === 8) {
+          errores.concentrese = erroresConcentreseTemp;
+          actividadesCompletadas.concentrese = true;
+          actualizarMenu();
+          const msg = document.getElementById("mensajeConcentrese");
+          msg.className = "mensaje ok";
+          msg.innerText = `🎉 ¡Encontraste todos los pares! Errores: ${erroresConcentreseTemp}`;
+          msg.style.display = "block";
+          estrellas += 5;
+          if (audioActivo) hablar("¡Excelente! Encontraste todos los pares.");
+          setTimeout(() => cambiarPantalla("pantallaMenu"), 2500);
+        }
+      }, 600);
+    } else {
+      erroresConcentreseTemp++;
+      setTimeout(() => {
+        c1.classList.remove("volteada");
+        c2.classList.remove("volteada");
+        cartasVolteadas = [];
+        bloqueadoConcentrese = false;
+      }, 1000);
+    }
+  }
+}
+
+// ============ UNIR PALABRAS ============
+const paresUnir = [
+  { sentido: "VISTA", organo: "Ojos" },
+  { sentido: "OIDO", organo: "Orejas" },
+  { sentido: "OLFATO", organo: "Nariz" },
+  { sentido: "GUSTO", organo: "Lengua" },
+  { sentido: "TACTO", organo: "Piel" }
+];
+
+let seleccionadoIzq = null;
+let conexionesHechas = 0;
+let erroresUnirTemp = 0;
+
+function iniciarUnir() {
+  seleccionadoIzq = null;
+  conexionesHechas = 0;
+  erroresUnirTemp = 0;
+  document.getElementById("conexionesHechas").innerText = "0";
+  document.getElementById("mensajeUnir").style.display = "none";
+  cambiarPantalla("pantallaUnir");
+  crearColumnas();
+}
+
+function crearColumnas() {
+  const colIzq = document.getElementById("columnaIzquierda");
+  const colDer = document.getElementById("columnaDerecha");
+  colIzq.innerHTML = "";
+  colDer.innerHTML = "";
+  
+  const sentidos = paresUnir.map(p => p.sentido).sort(() => Math.random() - 0.5);
+  const organos = paresUnir.map(p => p.organo).sort(() => Math.random() - 0.5);
+  
+  sentidos.forEach(s => {
+    const div = document.createElement("div");
+    div.className = "unir-item";
+    div.innerText = s;
+    div.dataset.sentido = s;
+    div.onclick = () => seleccionarIzquierda(div);
+    colIzq.appendChild(div);
+  });
+  
+  organos.forEach(o => {
+    const div = document.createElement("div");
+    div.className = "unir-item";
+    div.innerText = o;
+    div.dataset.organo = o;
+    div.onclick = () => seleccionarDerecha(div);
+    colDer.appendChild(div);
+  });
+}
+
+function seleccionarIzquierda(div) {
+  if (div.classList.contains("conectado")) return;
+  document.querySelectorAll("#columnaIzquierda .unir-item").forEach(i => i.classList.remove("seleccionado"));
+  div.classList.add("seleccionado");
+  seleccionadoIzq = div;
+}
+
+function seleccionarDerecha(div) {
+  if (div.classList.contains("conectado")) return;
+  if (!seleccionadoIzq) {
+    const msg = document.getElementById("mensajeUnir");
+    msg.className = "mensaje error";
+    msg.innerText = "Primero selecciona un sentido de la izquierda";
+    msg.style.display = "block";
+    setTimeout(() => { msg.style.display = "none"; }, 1500);
+    return;
+  }
+  
+  const sentido = seleccionadoIzq.dataset.sentido;
+  const organo = div.dataset.organo;
+  const parCorrecto = paresUnir.find(p => p.sentido === sentido);
+  
+  if (parCorrecto.organo === organo) {
+    seleccionadoIzq.classList.remove("seleccionado");
+    seleccionadoIzq.classList.add("conectado");
+    div.classList.add("conectado");
+    conexionesHechas++;
+    document.getElementById("conexionesHechas").innerText = conexionesHechas;
+    seleccionadoIzq = null;
+    
+    if (conexionesHechas === 5) {
+      errores.unir = erroresUnirTemp;
+      actividadesCompletadas.unir = true;
+      actualizarMenu();
+      const msg = document.getElementById("mensajeUnir");
+      msg.className = "mensaje ok";
+      msg.innerText = `🎉 ¡Uniste todos los sentidos! Errores: ${erroresUnirTemp}`;
+      msg.style.display = "block";
+      estrellas += 5;
+      if (audioActivo) hablar("¡Excelente! Uniste todos los sentidos con sus órganos.");
+      setTimeout(() => cambiarPantalla("pantallaMenu"), 2500);
+    }
+  } else {
+    erroresUnirTemp++;
+    div.classList.add("incorrecto");
+    setTimeout(() => { div.classList.remove("incorrecto"); }, 500);
+    const msg = document.getElementById("mensajeUnir");
+    msg.className = "mensaje error";
+    msg.innerText = `❌ Ese no es el órgano correcto. Errores: ${erroresUnirTemp}`;
+    msg.style.display = "block";
+    setTimeout(() => { msg.style.display = "none"; }, 1500);
+  }
+}
+
+// ============ DIPLOMA Y ENVÍO ============
+async function enviarNotasAutomatico() {
+  const estado = document.getElementById("estadoEnvio");
+  estado.innerText = "📡 Enviando informe a la Profe Vanessa...";
+  const totalErrores = errores.quiz + errores.ahorcado + errores.concentrese + errores.unir;
+  const totalActividades = Object.values(actividadesCompletadas).filter(v => v).length;
+  try {
+    await fetch(URL_SCRIPT, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        nombre: nombre,
+        apellido: apellido,
+        puntaje: estrellas * 5,
+        estrellas: estrellas,
+        aciertos: totalActividades,
+        avatar: "🕵️‍♂️",
+        actividad: "Sentidos - 4 Actividades",
+        errores_totales: totalErrores,
+        errores_quiz: errores.quiz,
+        errores_ahorcado: errores.ahorcado,
+        errores_concentrese: errores.concentrese,
+        errores_unir: errores.unir,
+        actividades_completadas: totalActividades
+      })
+    });
+    estado.innerText = "✅ ¡Informe enviado a la Profe Vanessa!";
+  } catch (e) {
+    estado.innerText = "⚠️ No se pudo enviar pero tu diploma está listo";
+  }
+}
+
+function generarDiploma() {
+  const canvas = document.getElementById("diplomaCanvas");
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+  const grad = ctx.createLinearGradient(0, 0, W, H);
+  grad.addColorStop(0, "#11998e");
+  grad.addColorStop(1, "#38ef7d");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.strokeStyle = "#ffd700";
+  ctx.lineWidth = 8;
+  ctx.strokeRect(20, 20, W-40, H-40);
+  ctx.strokeStyle = "#ff6f00";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(35, 35, W-70, H-70);
+
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#ffd700";
+  ctx.font = "bold 48px 'Comic Sans MS', cursive";
+  ctx.fillText("🏆 DIPLOMA 🏆", W/2, 100);
+
+  ctx.fillStyle = "#fff";
+  ctx.font = "24px 'Comic Sans MS', cursive";
+  ctx.fillText("Laboratorio de los Sentidos", W/2, 140);
+
+  ctx.fillStyle = "#ff6f00";
+  ctx.font = "22px 'Comic Sans MS', cursive";
+  ctx.fillText("Se otorga este reconocimiento a", W/2, 190);
+
+  ctx.fillStyle = "#ffd700";
+  ctx.font = "bold 42px 'Comic Sans MS', cursive";
+  ctx.fillText(`${nombre} ${apellido}`, W/2, 250);
+
+  ctx.strokeStyle = "#ffd700";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(W/2 - 200, 265);
+  ctx.lineTo(W/2 + 200, 265);
+  ctx.stroke();
+
+  ctx.fillStyle = "#fff";
+  ctx.font = "20px 'Comic Sans MS', cursive";
+  ctx.fillText("Por completar las 4 misiones de", W/2, 310);
+  ctx.font = "bold 26px 'Comic Sans MS', cursive";
+  ctx.fillStyle = "#ffca28";
+  ctx.fillText("Detective de los Sentidos", W/2, 350);
+  
+  ctx.font = "bold 22px 'Comic Sans MS', cursive";
+  ctx.fillStyle = "#fff";
+  ctx.fillText(`Con ${estrellas} estrellas y ${Object.values(actividadesCompletadas).filter(v=>v).length}/4 actividades`, W/2, 390);
+
+  ctx.font = "60px serif";
+  ctx.fillText("🕵️‍♂️🔬", W/2, 460);
+
+  const fecha = new Date().toLocaleDateString('es-CO', {day:'numeric', month:'long', year:'numeric'});
+  ctx.fillStyle = "#fff";
+  ctx.font = "18px 'Comic Sans MS', cursive";
+  ctx.fillText(`Bogotá ${fecha}`, W/2, 510);
+
+  ctx.fillStyle = "#ff6f00";
+  ctx.font = "bold italic 22px 'Comic Sans MS', cursive";
+  ctx.fillText("Profe Vanessa Salcedo", W/2, 540);
+}
+
+function descargarDiploma() {
+  const canvas = document.getElementById("diplomaCanvas");
+  const link = document.createElement("a");
+  link.download = `Diploma_Detective_${nombre}_${apellido}.png`;
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
+
+function reiniciar() {
+  nombre = ""; apellido = "";
+  estrellas = 0;
+  actividadesCompletadas = { quiz: false, ahorcado: false, concentrese: false, unir: false };
+  errores = { quiz: 0, ahorcado: 0, concentrese: 0, unir: 0 };
+  tutorialActual = 0;
+  document.getElementById("nombre").value = "";
+  document.getElementById("apellido").value = "";
+  document.getElementById("estadoEnvio").innerText = "";
+  cambiarPantalla("pantallaBienvenida");
+}
+</script>
+</body>
+</html>
